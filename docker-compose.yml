@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+
+  postgres:
+    image: postgres:12.3-alpine
+    environment:
+      POSTGRES_USER: smarthome
+      POSTGRES_PASSWORD: smarthome
+      POSTGRES_DB: smarthome
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - smarthome
+    healthcheck:
+      test: [ "CMD-SHELL", "su", "smarthome", "-c", "pg_isready -d smarthome" ]
+      interval: 2s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
+
+  backend:
+    image: smarthome/backend
+    build:
+      context: backend
+    environment:
+      PORT: 8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: smarthome
+      DB_PASSWORD: smarthome
+      DB_NAME: smarthome
+    ports:
+      - '8080:8080'
+    networks:
+      - smarthome
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    image: smarthome/frontend
+    build:
+      context: frontend
+    environment:
+      PORT: 8081
+      BACKEND_HOST: localhost
+      BACKEND_PORT: 8080
+    ports:
+      - '8081:8081'
+    networks:
+      - smarthome
+    depends_on:
+      backend:
+        condition: service_started
+
+networks:
+  smarthome: {}
+
