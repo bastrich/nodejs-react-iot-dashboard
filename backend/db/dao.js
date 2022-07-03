@@ -11,14 +11,22 @@ pool.connect()
 
 exports.add = (device) => new Promise((resolve, reject) => {
     pool.query(
-        'INSERT INTO devices (name, type, ip, mac, active, attributes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
-        [device.name, device.type, device.ip, device.mac, device.active, device.attributes],
-        (error, results) => {
+        'INSERT INTO devices (name, type, ip, mac, active, management_attributes, monitoring_attributes) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
+        [
+            device.name,
+            device.type,
+            device.ip,
+            device.mac,
+            device.active,
+            device.managementAttributes,
+            device.monitoring_attributes
+        ],
+        (error, result) => {
             if (error) {
                 reject(error)
                 return
             }
-            resolve(results.rows[0].id)
+            resolve(result.rows[0].id)
             return
             // response.status(201).send(`User added with ID: ${results.rows[0].id}`)
         }
@@ -27,21 +35,82 @@ exports.add = (device) => new Promise((resolve, reject) => {
 
 exports.getAll = () => new Promise((resolve, reject) => {
     pool.query(
-        'SELECT id, name, type, ip, mac, active, attributes FROM devices ORDER BY id ASC',
-        (error, results) => {
+        'SELECT id, name, type, ip, mac, active, management_attributes, monitoring_attributes FROM devices ORDER BY id ASC',
+        (error, result) => {
             if (error) {
                 reject(error)
                 return
             }
-            if (results) {
-                resolve(results.rows)
+            if (result) {
+                resolve(result.rows.map((row) => {
+                    row.managementAttributes = row.management_attributes
+                    row.monitoringAttributes = row.monitoring_attributes
+                    delete row.management_attributes
+                    delete row.monitoring_attributes
+                }))
                 return
             }
             resolve([])
-            return
-
-            // response.status(200).json(results.rows)
         }
     )
 });
 
+exports.getById = (deviceId) => new Promise((resolve, reject) => {
+    pool.query(
+        'SELECT id, name, type, ip, mac, active, management_attributes, monitoring_attributes FROM devices WHERE id = $1',
+        [deviceId],
+        (error, result) => {
+            if (error) {
+                reject(error)
+                return
+            }
+            if (result) {
+                const device = result.rows[0]
+                device.managementAttributes = device.management_attributes
+                device.monitoringAttributes = device.monitoring_attributes
+                delete device.management_attributes
+                delete device.monitoring_attributes
+                resolve(device)
+                return
+            }
+            resolve(null)
+        }
+    )
+});
+
+exports.update = (deviceId, device) => new Promise((resolve, reject) => {
+    pool.query(
+        'UPDATE devices SET name = $2, type = $3, ip = $4, mac = $5, active = $6, management_attributes=$7 WHERE id = $1',
+        [
+            deviceId,
+            device.name,
+            device.type,
+            device.ip,
+            device.mac,
+            device.active,
+            device.managementAttributes
+        ],
+        (error, result) => {
+            if (error) {
+                reject(error)
+                return
+            }
+            resolve(result.rowCount)
+        }
+    )
+});
+
+exports.delete = (deviceId) => new Promise((resolve, reject) => {
+    pool.query(
+        'DELETE FROM devices WHERE id = $1',
+        [deviceId],
+        (error, result) => {
+            if (error) {
+                reject(error)
+                return
+            }
+            resolve(result.rowCount)
+            return
+        }
+    )
+});

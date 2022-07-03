@@ -10,8 +10,9 @@ CREATE TABLE devices (
     id bigserial PRIMARY KEY,
     name text NOT NULL,
     type device_type NOT NULL,
-    ip inet,
-    mac macaddr8,
+    ip inet NOT NULL,
+    mac macaddr8 NOT NULL,
     active boolean NOT NULL,
-    attributes jsonb
+    management_attributes jsonb NOT NULL,
+    monitoring_attributes jsonb NOT NULL
 );

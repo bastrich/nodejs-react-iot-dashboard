@@ -21,40 +21,40 @@ services:
       retries: 5
       start_period: 5s
 
-  backend:
-    image: smarthome/backend
-    build:
-      context: backend
-    environment:
-      PORT: 8080
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USER: smarthome
-      DB_PASSWORD: smarthome
-      DB_NAME: smarthome
-    ports:
-      - '8080:8080'
-    networks:
-      - smarthome
-    depends_on:
-      postgres:
-        condition: service_healthy
-
-  frontend:
-    image: smarthome/frontend
-    build:
-      context: frontend
-    environment:
-      PORT: 8081
-      BACKEND_HOST: localhost
-      BACKEND_PORT: 8080
-    ports:
-      - '8081:8081'
-    networks:
-      - smarthome
-    depends_on:
-      backend:
-        condition: service_started
+#  backend:
+#    image: smarthome/backend
+#    build:
+#      context: backend
+#    environment:
+#      PORT: 8080
+#      DB_HOST: postgres
+#      DB_PORT: 5432
+#      DB_USER: smarthome
+#      DB_PASSWORD: smarthome
+#      DB_NAME: smarthome
+#    ports:
+#      - '8080:8080'
+#    networks:
+#      - smarthome
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#
+#  frontend:
+#    image: smarthome/frontend
+#    build:
+#      context: frontend
+#    environment:
+#      PORT: 8081
+#      BACKEND_HOST: localhost
+#      BACKEND_PORT: 8080
+#    ports:
+#      - '8081:8081'
+#    networks:
+#      - smarthome
+#    depends_on:
+#      backend:
+#        condition: service_started
 
 networks:
   smarthome: {}

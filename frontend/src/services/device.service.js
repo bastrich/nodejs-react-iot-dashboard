@@ -1,25 +1,19 @@
 import http from "../http-common";
 class DeviceDataService {
+    create(device) {
+        return http.post("/devices", device);
+    }
     getAll() {
         return http.get("/devices");
     }
-    get(id) {
+    getById(id) {
         return http.get(`/devices/${id}`);
     }
-    create(data) {
-        return http.post("/devices", data);
-    }
-    update(id, data) {
-        return http.put(`/devices/${id}`, data);
+    update(id, device) {
+        return http.put(`/devices/${id}`, device);
     }
     delete(id) {
         return http.delete(`/devices/${id}`);
-    }
-    deleteAll() {
-        return http.delete(`/devices`);
-    }
-    findByTitle(title) {
-        return http.get(`/devices?name=${title}`);
     }
 }
 export default new DeviceDataService();
