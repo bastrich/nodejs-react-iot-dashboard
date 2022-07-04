@@ -47,6 +47,7 @@ exports.getAll = () => new Promise((resolve, reject) => {
                     row.monitoringAttributes = row.monitoring_attributes
                     delete row.management_attributes
                     delete row.monitoring_attributes
+                    return row
                 }))
                 return
             }

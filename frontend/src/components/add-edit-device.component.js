@@ -9,22 +9,7 @@ import {
     // useNavigate,
     useParams
 } from "react-router-dom";
-
-function withRouter(Component) {
-    function ComponentWithRouterProp(props) {
-        // let location = useLocation();
-        // let navigate = useNavigate();
-        let params = useParams();
-        return (
-            <Component
-                {...props}
-                router={{ params }}
-            />
-        );
-    }
-
-    return ComponentWithRouterProp;
-}
+import {useEffect, useState} from "@types/react";
 
 const BULB_STATES = ['on', 'off']
 const BULB_COLORS = ['red', 'green', 'yellow', 'white']
@@ -37,35 +22,22 @@ const FRIDGE_STATES = ['on', 'off', 'maintenance']
 
 const KETTLE_STATES = ['on', 'off']
 
-export default withRouter(class AddEditDevice extends Component {
+export const AddEditDevice = () => {
 
-    constructor(props) {
-        super(props);
+    const [id, setId] = useState(useParams().id || null)
+    const [name, setName] = useState("")
+    const [type, setType] = useState("")
+    const [ip, setIp] = useState("")
+    const [mac, setMac] = useState("")
+    const [managementAttributes, setManagementAttributes] = useState({})
+    const [monitoringAttributes, setMonitoringAttributes] = useState({})
+    this.state = {
+        id: null, name: "", type: "BULB", ip: "", mac: "", active: false, managementAttributes: {
+            status: "on", color: "white", brightness: 50
+        }, mode: "CREATE"
+    };
 
-        this.onChangeName = this.onChangeName.bind(this);
-        this.onChangeType = this.onChangeType.bind(this);
-        this.onChangeIp = this.onChangeIp.bind(this);
-        this.onChangeMac = this.onChangeMac.bind(this);
-        this.onChangeActive = this.onChangeActive.bind(this);
-        this.onChangeStatus = this.onChangeStatus.bind(this)
-        this.onChangeColor = this.onChangeColor.bind(this)
-        this.onChangeBrightness = this.onChangeBrightness.bind(this)
-        this.onChangeTemperature = this.onChangeTemperature.bind(this)
-        this.onChangeVolume = this.onChangeVolume.bind(this)
-        this.onChangeHeaterTemperature = this.onChangeHeaterTemperature.bind(this)
-
-        this.getDevice = this.getDevice.bind(this);
-        this.createDevice = this.createDevice.bind(this);
-        this.updateDevice = this.updateDevice.bind(this);
-
-        this.state = {
-            id: null, name: "", type: "BULB", ip: "", mac: "", active: false, managementAttributes: {
-                status: "on", color: "white", brightness: 50
-            }, mode: "CREATE"
-        };
-    }
-
-    componentDidMount() {
+    useEffect(() => {
         const deviceId = this.props.router.params.id
         if (deviceId) {
             this.getDevice(deviceId);
@@ -77,13 +49,11 @@ export default withRouter(class AddEditDevice extends Component {
                 mode: "CREATE"
             });
         }
-    }
+    });
 
 
-    onChangeName(e) {
-        this.setState({
-            name: e.target.value
-        });
+    const onChangeName = (e) => {
+        setName(e.target.value)
     }
 
     onChangeType(e) {
@@ -140,38 +110,50 @@ export default withRouter(class AddEditDevice extends Component {
     }
 
     onChangeStatus(e) {
+        const managementAttributes = {...this.state.managementAttributes}
+        managementAttributes.status = e.target.value
         this.setState({
-            managementAttributes: this.state.managementAttributes || {status: e.target.value}
+            managementAttributes: managementAttributes
         });
     }
 
     onChangeColor(e) {
+        const managementAttributes = {...this.state.managementAttributes}
+        managementAttributes.color = e.target.value
         this.setState({
-            managementAttributes: this.state.managementAttributes || {color: e.target.value}
+            managementAttributes: managementAttributes
         });
     }
 
     onChangeBrightness(e) {
+        const managementAttributes = {...this.state.managementAttributes}
+        managementAttributes.brightness = e.target.value
         this.setState({
-            managementAttributes: this.state.managementAttributes || {brightness: e.target.value}
+            managementAttributes: managementAttributes
         });
     }
 
     onChangeTemperature(e) {
+        const managementAttributes = {...this.state.managementAttributes}
+        managementAttributes.temperature = e.target.value
         this.setState({
-            managementAttributes: this.state.managementAttributes || {temperature: e.target.value}
+            managementAttributes: managementAttributes
         });
     }
 
     onChangeVolume(e) {
+        const managementAttributes = {...this.state.managementAttributes}
+        managementAttributes.volume = e.target.value
         this.setState({
-            managementAttributes: this.state.managementAttributes || {volume: e.target.value}
+            managementAttributes: managementAttributes
         });
     }
 
     onChangeHeaterTemperature(e) {
+        const managementAttributes = {...this.state.managementAttributes}
+        managementAttributes.heaterTemperature = e.target.value
         this.setState({
-            managementAttributes: this.state.managementAttributes || {heaterTemperature: e.target.value}
+            managementAttributes: managementAttributes
         });
     }
 
