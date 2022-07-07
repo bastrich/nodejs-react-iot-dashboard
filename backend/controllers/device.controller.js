@@ -15,15 +15,20 @@ Array.prototype.random = () => {
     return this[Math.floor(Math.random() * this.length)];
 };
 
+deduplicate = (array) => {
+    return [...new Set(array)];
+}
+
 const validate = (req) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return {
-            message: errors.array()
-                .map((error) => {
-                    return `Field '${error.param}' ${error.msg}, passed value: ${error.value}`
-                })
-                .join("<br>")
+            messages: deduplicate(
+                errors.array()
+                    .map((error) => {
+                        return `Field '${error.param}' ${error.msg}, passed value: '${error.value}'`
+                    })
+            )
         };
     }
 };
@@ -38,6 +43,7 @@ exports.create = (req, res) => {
 
     const device = req.body;
 
+    //Emulate integration with a real device generating random values for monitoring attributes
     switch (device.type) {
         case "BULB":
             device.monitoring_attributes = {
@@ -84,7 +90,7 @@ exports.create = (req, res) => {
         })
         .catch(err => {
             res.status(500).send({
-                message: `Error creating device: ${err.message}`
+                messages: [`Error creating device: ${err.message}`]
             });
         });
 };
@@ -100,7 +106,7 @@ exports.getAll = (req, res) => {
         })
         .catch(err => {
             res.status(500).send({
-                message: `Error receiving list of all device: ${err.message}`
+                messages: [`Error receiving list of all device: ${err.message}`]
             });
         });
 };
@@ -119,13 +125,13 @@ exports.getById = (req, res) => {
                 res.send(device);
             } else {
                 res.status(404).send({
-                    message: `Device ${req.params.id} not found`
+                    messages: [`Device ${req.params.id} not found`]
                 });
             }
         })
         .catch(err => {
             res.status(500).send({
-                message: `Error receiving a device: ${err.message}`
+                messages: [`Error receiving a device: ${err.message}`]
             });
         });
 };
@@ -136,13 +142,14 @@ exports.update = (req, res) => {
     if (validation) {
         res.status(400).send(validation);
         return;
-    };
+    }
+    ;
 
     dao.update(req.params.id, req.body)
         .then(affectedRows => {
             if (affectedRows === 0) {
                 res.status(404).send({
-                    message: `Device ${req.params.id} not found`
+                    messages: [`Device ${req.params.id} not found`]
                 });
             } else {
                 const response = {
@@ -153,7 +160,7 @@ exports.update = (req, res) => {
         })
         .catch(err => {
             res.status(500).send({
-                message: `Error updating device ${req.params.id}: ${err.message}`
+                messages: [`Error updating device ${req.params.id}: ${err.message}`]
             });
         });
 };
@@ -170,7 +177,7 @@ exports.delete = (req, res) => {
         .then(affectedRows => {
             if (affectedRows === 0) {
                 res.status(404).send({
-                    message: `Device ${req.params.id} not found`
+                    messages: [`Device ${req.params.id} not found`]
                 });
             } else {
                 const response = {
@@ -181,7 +188,7 @@ exports.delete = (req, res) => {
         })
         .catch(err => {
             res.status(500).send({
-                message: `Error deleting device ${req.params.id}: ${err.message}`
+                messages: [`Error deleting device ${req.params.id}: ${err.message}`]
             });
         });
 };

@@ -5,7 +5,6 @@ import {NotificationManager} from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 
 import {
-    // useLocation,
     useNavigate,
     useParams
 } from "react-router-dom";
@@ -14,10 +13,9 @@ import {
     Checkbox,
     FormControl,
     FormControlLabel,
-    FormGroup,
     InputLabel,
     MenuItem,
-    Select, Slider,
+    Select, Slider, Stack,
     TextField
 } from "@mui/material";
 import Button from "@mui/material/Button";
@@ -33,6 +31,26 @@ const FRIDGE_STATES = ['on', 'off', 'maintenance']
 
 const KETTLE_STATES = ['on', 'off']
 
+const SubmitButton = (props) => {
+    return (
+        <Button
+            key={props.text}
+            onClick={props.onClick}
+            sx={{
+                my: 2,
+                color: 'white',
+                backgroundColor: 'CornflowerBlue',
+                display: 'block',
+                '&:hover': {
+                    backgroundColor: 'DeepSkyBlue'
+                }
+            }}
+        >
+            {props.text}
+        </Button>
+    )
+}
+
 const AddEditDevice = () => {
     const navigate = useNavigate();
 
@@ -45,7 +63,11 @@ const AddEditDevice = () => {
     const [managementAttributes, setManagementAttributes] = useState({
         status: "on", color: "white", brightness: 50
     })
+
     const [mode, setMode] = useState("CREATE")
+    const [nameHelperText, setNameHelperText] = useState("")
+    const [ipHelperText, setIpHelperText] = useState("")
+    const [macHelperText, setMacHelperText] = useState("")
 
     useEffect(() => {
         if (id) {
@@ -56,8 +78,20 @@ const AddEditDevice = () => {
         }
     }, [id]);
 
+    const validateName = (value) => {
+        if (/^[a-z\d\- _]{1,50}$/i.test(value)) {
+            return null;
+        }
+        return "'Name' should be alphanumeric (space, - and _ are also allowed) string with length from 1 to 50";
+    }
 
     const onChangeName = (e) => {
+        const validationMessage = validateName(e.target.value)
+        if (validationMessage) {
+            setNameHelperText(validationMessage)
+        } else {
+            setNameHelperText("")
+        }
         setName(e.target.value)
     }
 
@@ -93,11 +127,37 @@ const AddEditDevice = () => {
         setType(chosenType)
     }
 
+    const validateIp = (value) => {
+        if (/^(25[0-5]|2[0-4]\d|[01]?\d\d?)\.(25[0-5]|2[0-4]\d|[01]?\d\d?)\.(25[0-5]|2[0-4]\d|[01]?\d\d?)\.(25[0-5]|2[0-4]\d|[01]?\d\d?)$/.test(value)) {
+            return null;
+        }
+        return "IP should be valid IPv4 address";
+    }
+
     const onChangeIp = (e) => {
+        const validationMessage = validateIp(e.target.value)
+        if (validationMessage) {
+            setIpHelperText(validationMessage)
+        } else {
+            setIpHelperText("")
+        }
         setIp(e.target.value)
     }
 
+    const validateMac = (value) => {
+        if (/^[\da-f]{1,2}([\.:-])(?:[\da-f]{1,2}\1){4}[\da-f]{1,2}$/i.test(value)) {
+            return null;
+        }
+        return "MAC should be valid MAC address";
+    }
+
     const onChangeMac = (e) => {
+        const validationMessage = validateMac(e.target.value)
+        if (validationMessage) {
+            setMacHelperText(validationMessage)
+        } else {
+            setMacHelperText("")
+        }
         setMac(e.target.value)
     }
 
@@ -114,19 +174,19 @@ const AddEditDevice = () => {
     }
 
     const onChangeBrightness = (e) => {
-        setManagementAttributes({...managementAttributes, brightness: e.target.value})
+        setManagementAttributes({...managementAttributes, brightness: parseInt(e.target.value)})
     }
 
     const onChangeTemperature = (e) => {
-        setManagementAttributes({...managementAttributes, temperature: e.target.value})
+        setManagementAttributes({...managementAttributes, temperature: parseInt(e.target.value)})
     }
 
     const onChangeVolume = (e) => {
-        setManagementAttributes({...managementAttributes, volume: e.target.value})
+        setManagementAttributes({...managementAttributes, volume: parseInt(e.target.value)})
     }
 
     const onChangeHeaterTemperature = (e) => {
-        setManagementAttributes({...managementAttributes, heaterTemperature: e.target.value})
+        setManagementAttributes({...managementAttributes, heaterTemperature: parseInt(e.target.value)})
     }
 
     const getDevice = (id) => {
@@ -145,6 +205,18 @@ const AddEditDevice = () => {
             });
     }
 
+    const validateDevice = (device) => {
+        const nameValidationMessage = validateName(device.name)
+        const ipValidationMessage = validateIp(device.ip)
+        const macValidationMessage = validateMac(device.mac)
+
+        return [
+            nameValidationMessage,
+            ipValidationMessage,
+            macValidationMessage
+        ].filter(message => message != null)
+    }
+
     const createDevice = () => {
         const device = {
             name: name,
@@ -154,14 +226,27 @@ const AddEditDevice = () => {
             active: active,
             managementAttributes: managementAttributes
         };
+
+        const validations = validateDevice(device)
+        if (validations.length > 0) {
+            validations.forEach(validation => {
+                NotificationManager.error(validation, "Error creating a device", 10000)
+            })
+            return;
+        }
+
         DeviceDataService.create(device)
             .then(response => {
                 navigate(`/devices/${response.data.id}/edit`);
+                setMode("EDIT")
+                setId(response.data.id)
                 NotificationManager.success(`Device successfully created with id ${response.data.id}`)
             })
             .catch(error => {
                 if (error.response) {
-                    NotificationManager.error(`Error creating a device: ${error.response.data.message}`)
+                    error.response.data.messages.forEach(message => {
+                        NotificationManager.error(message, "Error creating a device", 10000)
+                    })
                 } else {
                     NotificationManager.error(`Error creating a device: ${error}`)
                 }
@@ -177,15 +262,26 @@ const AddEditDevice = () => {
             active: active,
             managementAttributes: managementAttributes
         };
+
+        const validations = validateDevice(device)
+        if (validations.length > 0) {
+            validations.forEach(validation => {
+                NotificationManager.error(validation, "Error updating the device", 10000)
+            })
+            return;
+        }
+
         DeviceDataService.update(id, device)
             .then(response => {
                 NotificationManager.success(`Device ${id} successfully updated`)
             })
             .catch(error => {
                 if (error.response) {
-                    NotificationManager.error(`Error updating a device: ${error.response.data.message}`)
+                    error.response.data.messages.forEach(message => {
+                        NotificationManager.error(message, "Error updating the device", 10000)
+                    })
                 } else {
-                    NotificationManager.error(`Error updating a device: ${error}`)
+                    NotificationManager.error(`Error updating the device: ${error}`)
                 }
             });
     }
@@ -252,6 +348,7 @@ const AddEditDevice = () => {
         if (["BULB", "TV"].includes(type)) {
             return (
                 <FormControlLabel
+                    sx={{width: "50%"}}
                     control={<Slider
                         id="brightness"
                         value={managementAttributes.brightness}
@@ -272,6 +369,7 @@ const AddEditDevice = () => {
         if (["RADIATOR", "FRIDGE"].includes(type)) {
             return (
                 <FormControlLabel
+                    sx={{width: "50%"}}
                     control={<Slider
                         id="temperature"
                         value={managementAttributes.temperature || 50}
@@ -292,6 +390,7 @@ const AddEditDevice = () => {
         if (type === "TV") {
             return (
                 <FormControlLabel
+                    sx={{width: "50%"}}
                     control={<Slider
                         id="volume"
                         value={managementAttributes.volume || 50}
@@ -312,6 +411,7 @@ const AddEditDevice = () => {
         if (type === "KETTLE") {
             return (
                 <FormControlLabel
+                    sx={{width: "50%"}}
                     control={<Slider
                         id="heater-temperature"
                         value={managementAttributes.heaterTemperature || 50}
@@ -328,77 +428,76 @@ const AddEditDevice = () => {
         return null
     }
 
-        return (
-            <FormGroup
-                component="form"
-                sx={{
-                    '& .MuiTextField-root': { m: 1},
-                }}
-                noValidate
-                autoComplete="off"
-            >
-                <TextField
-                    id="name"
-                    label="Name"
-                    variant="outlined"
-                    value={name}
-                    onChange={onChangeName}
-                    required
-                />
-                <FormControl fullWidth>
-                    <InputLabel id="type-lable">Type</InputLabel>
-                    <Select
-                        labelId="type-lable"
-                        id="type"
-                        value={type}
-                        label="Type"
-                        onChange={onChangeType}
-                    >
-                        <MenuItem value="BULB">BULB</MenuItem>
-                        <MenuItem value="RADIATOR">RADIATOR</MenuItem>
-                        <MenuItem value="TV">TV</MenuItem>
-                        <MenuItem value="FRIDGE">FRIDGE</MenuItem>
-                        <MenuItem value="KETTLE">KETTLE</MenuItem>
-                    </Select>
-                </FormControl>
-                <TextField
-                    id="ip"
-                    label="IP"
-                    variant="outlined"
-                    value={ip}
-                    onChange={onChangeIp}
-                    required
-                />
-                <TextField
-                    id="mac"
-                    label="MAC"
-                    variant="outlined"
-                    value={mac}
-                    onChange={onChangeMac}
-                    required
-                />
-                <FormControlLabel
-                    control={<Checkbox
-                        id="active"
-                        checked={active}
-                        onChange={onChangeActive}
-                    />}
-                    label="Active"
-                />
-                {renderStatusSelector()}
-                {renderColorSelector()}
-                {renderBrightnessSlider()}
-                {renderTemperatureSlider()}
-                {renderVolumeSlider()}
-                {renderHeaterTemperatureSlider()}
-
-                <Button
-                    onClick={mode === "CREATE" ? createDevice : updateDevice}
+    return (
+        <Stack alignItems={"flex-start"} justifyContent={"center"} spacing={2} maxWidth="md">
+            <TextField
+                id="name"
+                label="Name"
+                variant="outlined"
+                value={name}
+                onChange={onChangeName}
+                required
+                error={nameHelperText.length > 0}
+                helperText={nameHelperText}
+            />
+            <FormControl>
+                <InputLabel id="type-lable">Type</InputLabel>
+                <Select
+                    labelId="type-lable"
+                    id="type"
+                    value={type}
+                    label="Type"
+                    onChange={onChangeType}
                 >
-                    {mode === "CREATE" ? (<p>Create</p>) : (<p>Update</p>)}
-                </Button>
-            </FormGroup>
-        );
+                    <MenuItem value="BULB">BULB</MenuItem>
+                    <MenuItem value="RADIATOR">RADIATOR</MenuItem>
+                    <MenuItem value="TV">TV</MenuItem>
+                    <MenuItem value="FRIDGE">FRIDGE</MenuItem>
+                    <MenuItem value="KETTLE">KETTLE</MenuItem>
+                </Select>
+            </FormControl>
+
+            <TextField
+                id="ip"
+                label="IP"
+                variant="outlined"
+                value={ip}
+                onChange={onChangeIp}
+                required
+                error={ipHelperText.length > 0}
+                helperText={ipHelperText}
+            />
+            <TextField
+                id="mac"
+                label="MAC"
+                variant="outlined"
+                value={mac}
+                onChange={onChangeMac}
+                required
+                error={macHelperText.length > 0}
+                helperText={macHelperText}
+            />
+            <FormControlLabel
+                control={<Checkbox
+                    id="active"
+                    checked={active}
+                    onChange={onChangeActive}
+                />}
+                label="Active"
+            />
+            {renderStatusSelector()}
+            {renderColorSelector()}
+            {renderBrightnessSlider()}
+            {renderTemperatureSlider()}
+            {renderVolumeSlider()}
+            {renderHeaterTemperatureSlider()}
+
+            <SubmitButton
+                text={mode === "CREATE" ? "Create" : "Update"}
+                onClick={mode === "CREATE" ? createDevice : updateDevice}
+            />
+        </Stack>
+    );
 }
 
 export default AddEditDevice

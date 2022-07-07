@@ -1,3 +1,5 @@
+//Render Navigation menu and parent container for other pages
+
 import React from "react";
 import {Link, Route, Routes, useMatch} from "react-router-dom";
 import DevicesList from './components/devices-list.component'
@@ -5,46 +7,37 @@ import AddEditDevice from './components/add-edit-device.component'
 import Device from './components/device.component'
 import About from './components/about.component'
 import "bootstrap/dist/css/bootstrap.min.css";
-import './App.css';
 
 import OnlinePredictionIcon from '@mui/icons-material/OnlinePrediction';
-
-
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
-import {Stack} from "@mui/material";
+import {AppBar, Box, Toolbar, Typography, Container, Button, Stack} from "@mui/material";
 import {NotificationContainer} from "react-notifications";
 
-export const App = () => {
+const MenuButton = (props) => {
+    return (
+        <Button
+            component={Link}
+            to={props.link}
+            key={props.text}
+            sx={{
+                my: 2,
+                color: 'white',
+                backgroundColor: props.isSelected ? 'DeepSkyBlue' : 'inherit',
+                display: 'block',
+                '&:hover': {
+                    backgroundColor: 'DeepSkyBlue',
+                    color: 'white',
+                }
+            }}
+        >
+            {props.text}
+        </Button>
+    )
+}
+
+const App = () => {
     const isMainPage = !!useMatch("/") | !!useMatch("/devices")
     const isAddPage = useMatch("/devices/add")
     const isAboutPage = useMatch("/about")
-
-    const renderMenuButton = (text, link, isSelected) => {
-        return (
-            <Button
-                component={Link}
-                to={link}
-                key={text}
-                sx={{
-                    my: 2,
-                    color: 'white',
-                    backgroundColor: isSelected ? 'DeepSkyBlue' : 'inherit',
-                    display: 'block',
-                    '&:hover': {
-                        backgroundColor: 'DeepSkyBlue',
-                        color: 'white',
-                    }
-                }}
-            >
-                {text}
-            </Button>
-        )
-    }
 
     return (
         <Stack alignItems={"center"} justifyContent={"center"} spacing={2}>
@@ -72,12 +65,10 @@ export const App = () => {
                         >
                             MY SMART HOME
                         </Typography>
-
-
                         <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
-                            {renderMenuButton("All Devices", "/devices", isMainPage)}
-                            {renderMenuButton("Add Device", "/devices/add", isAddPage)}
-                            {renderMenuButton("About", "/about", isAboutPage)}
+                            <MenuButton text="All Devices" link="/devices" isSelected={isMainPage}/>
+                            <MenuButton text="Add Device" link="/devices/add" isSelected={isAddPage}/>
+                            <MenuButton text="About" link="/about" isSelected={isAboutPage}/>
                         </Box>
                     </Toolbar>
                 </Container>
@@ -96,3 +87,5 @@ export const App = () => {
         </Stack>
     );
 }
+
+export default App;

@@ -11,7 +11,7 @@ CREATE TABLE devices (
     name text NOT NULL,
     type device_type NOT NULL,
     ip inet NOT NULL,
-    mac macaddr8 NOT NULL,
+    mac macaddr NOT NULL,
     active boolean NOT NULL,
     management_attributes jsonb NOT NULL,
     monitoring_attributes jsonb NOT NULL

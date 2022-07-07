@@ -9,7 +9,7 @@ import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
 import {Book, Pencil, Trash} from "react-bootstrap-icons";
 import TableContainer from "@mui/material/TableContainer";
-import {Divider} from "@mui/material";
+import {Container, Divider} from "@mui/material";
 import Box from "@mui/material/Box";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -49,11 +49,10 @@ const Device = () => {
         return (
             <TableRow
                 hover
-                // key={attributeName}
                 sx={{'&:last-child td, &:last-child th': {border: 0}}}
             >
-                <TableCell component="th" scope="row" sx={{'borderRight': '5px solid red'}}>{attributeName}: </TableCell>
-                <TableCell align="right">{attributeValue}</TableCell>
+                <TableCell component="th" scope="row">{attributeName}: </TableCell>
+                <TableCell align="right" sx={{'borderLeft': '5px dashed CadetBlue !important'}}>{attributeValue}</TableCell>
             </TableRow>
         )
     }
@@ -145,36 +144,41 @@ const Device = () => {
     }
 
     return (
-        <TableContainer component={Paper}>
-            <Table sx={{minWidth: 650}} aria-label="simple table">
-                <TableBody>
-                    {renderAttributeRow("ID", id)}
-                    {renderAttributeRow("Name", name)}
-                    {renderAttributeRow("Type", type)}
-                    {renderAttributeRow("IP", ip)}
-                    {renderAttributeRow("MAC", mac)}
-                    {renderAttributeRow("Active", active ? <CheckCircleIcon/> : <CancelIcon/>)}
+        <Container maxWidth="sm">
+            <TableContainer component={Paper}>
+                <Table aria-label="simple table">
+                    <TableBody>
+                        {renderAttributeRow("ID", id)}
+                        {renderAttributeRow("Name", name)}
+                        {renderAttributeRow("Type", type)}
+                        {renderAttributeRow("IP", ip)}
+                        {renderAttributeRow("MAC", mac)}
+                        {renderAttributeRow("Active", active ? <CheckCircleIcon sx={{color: "green"}}/> :
+                            <CancelIcon sx={{color: "red"}}/>)}
 
-                    <TableRow
-                        hover
-                        key="target-status"
-                        sx={{'&:last-child td, &:last-child th': {border: 0}}}
-                    >
-                        <TableCell align="right">Target State:</TableCell>
-                    </TableRow>
-                    {renderManagementAttributes()}
+                        <TableRow
+                            hover
+                            key="target-status"
+                            sx={{'&:last-child td, &:last-child th': {border: 0}}}
+                        >
+                            <TableCell align="right">Target State:</TableCell>
+                            <TableCell/>
+                        </TableRow>
+                        {renderManagementAttributes()}
 
-                    <TableRow
-                        hover
-                        key="current-state"
-                        sx={{'&:last-child td, &:last-child th': {border: 0}}}
-                    >
-                        <TableCell align="right">Current State:</TableCell>
-                    </TableRow>
-                    {renderMonitoringAttributes()}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                        <TableRow
+                            hover
+                            key="current-state"
+                            sx={{'&:last-child td, &:last-child th': {border: 0}}}
+                        >
+                            <TableCell align="right">Current State:</TableCell>
+                            <TableCell/>
+                        </TableRow>
+                        {renderMonitoringAttributes()}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Container>
     )
 }
 

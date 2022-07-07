@@ -41,7 +41,7 @@ const deviceMacValidator = body("mac", "should be valid MAC address")
     .isMACAddress();
 
 const deviceActiveValidator = body("active", "should be valid boolean value")
-    .exists({checkFalsy: true, checkNull: true})
+    .exists({checkNull: true})
     .trim()
     .isBoolean();
 
