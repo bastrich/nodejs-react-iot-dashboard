@@ -27,6 +27,7 @@ services:
 #      context: backend
 #    environment:
 #      PORT: 8080
+#      FRONTEND_PORT: 8081
 #      DB_HOST: postgres
 #      DB_PORT: 5432
 #      DB_USER: smarthome

@@ -1,11 +1,9 @@
 import React from "react";
-import {Link, useMatch} from "react-router-dom";
-import {Routes} from 'react-router-dom'
-import {Route} from 'react-router-dom'
-import {DevicesList} from './components/devices-list.component.js'
-import {default as AddEditDevice} from './components/add-edit-device.component.js'
-import {Device} from './components/device.component.js'
-import {About} from './components/about.component.js'
+import {Link, Route, Routes, useMatch} from "react-router-dom";
+import DevicesList from './components/devices-list.component'
+import AddEditDevice from './components/add-edit-device.component'
+import Device from './components/device.component'
+import About from './components/about.component'
 import "bootstrap/dist/css/bootstrap.min.css";
 import './App.css';
 
@@ -15,23 +13,38 @@ import OnlinePredictionIcon from '@mui/icons-material/OnlinePrediction';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import {Stack} from "@mui/material";
-import {Book, Pencil, Trash} from "react-bootstrap-icons";
+import {NotificationContainer} from "react-notifications";
 
-function App() {
-    // let isMainPage1 = useMatch("/devices")
-    // let isMainPage2 = useMatch("/")
+export const App = () => {
     const isMainPage = !!useMatch("/") | !!useMatch("/devices")
     const isAddPage = useMatch("/devices/add")
     const isAboutPage = useMatch("/about")
+
+    const renderMenuButton = (text, link, isSelected) => {
+        return (
+            <Button
+                component={Link}
+                to={link}
+                key={text}
+                sx={{
+                    my: 2,
+                    color: 'white',
+                    backgroundColor: isSelected ? 'DeepSkyBlue' : 'inherit',
+                    display: 'block',
+                    '&:hover': {
+                        backgroundColor: 'DeepSkyBlue',
+                        color: 'white',
+                    }
+                }}
+            >
+                {text}
+            </Button>
+        )
+    }
 
     return (
         <Stack alignItems={"center"} justifyContent={"center"} spacing={2}>
@@ -52,79 +65,19 @@ function App() {
                                 letterSpacing: '.3rem',
                                 color: 'LightGreen',
                                 textDecoration: 'none',
-                                // '&:focus': {
-                                //     textDecoration: 'none'
-                                // },
                                 '&:hover': {
                                     color: 'PaleGreen',
-                                },
-                                // '&:visited': {
-                                //     textDecoration: 'none'
-                                // },
-                                // '&:link': {
-                                //     textDecoration: 'none'
-                                // },
-                                // '&:active': {
-                                //     textDecoration: 'none'
-                                // }
+                                }
                             }}
                         >
-                            My Smart Home
+                            MY SMART HOME
                         </Typography>
 
 
                         <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
-                            <Button
-                                component={Link}
-                                to={`/devices`}
-                                key="All Devices"
-                                sx={{
-                                    my: 2,
-                                    color: 'white',
-                                    backgroundColor: isMainPage ? 'DeepSkyBlue' : 'inherit',
-                                    display: 'block',
-                                    '&:hover': {
-                                        backgroundColor: 'DeepSkyBlue',
-                                        color: 'white',
-                                    }
-                                }}
-                            >
-                                All Devices
-                            </Button>
-                            <Button
-                                component={Link}
-                                to={`/devices/add`}
-                                key="Add Device"
-                                sx={{
-                                    my: 2,
-                                    color: 'white',
-                                    backgroundColor: isAddPage ? 'DeepSkyBlue' : 'inherit',
-                                    display: 'block',
-                                    '&:hover': {
-                                        backgroundColor: 'DeepSkyBlue',
-                                        color: 'white',
-                                    }
-                                }}
-                            >
-                                Add Device
-                            </Button>
-                            <Button
-                                component={Link}
-                                to={`/about`}
-                                key="About"
-                                sx={{
-                                    my: 2,
-                                    color: 'white',
-                                    backgroundColor: isAboutPage ? 'DeepSkyBlue' : 'inherit',
-                                    display: 'block',
-                                    '&:hover': {
-                                        backgroundColor: 'DeepSkyBlue',
-                                        color: 'white',
-                                    }
-                                }}
-                            >
-                                About
-                            </Button>
+                            {renderMenuButton("All Devices", "/devices", isMainPage)}
+                            {renderMenuButton("Add Device", "/devices/add", isAddPage)}
+                            {renderMenuButton("About", "/about", isAboutPage)}
                         </Box>
                     </Toolbar>
                 </Container>
@@ -139,8 +92,7 @@ function App() {
                     <Route exact path="/about" element={<About/>}/>
                 </Routes>
             </Container>
+            <NotificationContainer/>
         </Stack>
     );
 }
-
-export default App;

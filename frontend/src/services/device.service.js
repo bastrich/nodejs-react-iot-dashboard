@@ -1,4 +1,4 @@
-import http from "../http-common";
+import http from "../helpers/http-common";
 class DeviceDataService {
     create(device) {
         return http.post("/devices", device);

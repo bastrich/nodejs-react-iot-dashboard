@@ -1,5 +1,8 @@
+//Data Access Object Module
+
 const dbConfigs = require('./config')
 const {Pool} = require('pg')
+
 const pool = new Pool({
     host: dbConfigs.HOST,
     port: dbConfigs.PORT,
@@ -27,8 +30,6 @@ exports.add = (device) => new Promise((resolve, reject) => {
                 return
             }
             resolve(result.rows[0].id)
-            return
-            // response.status(201).send(`User added with ID: ${results.rows[0].id}`)
         }
     )
 });
@@ -65,7 +66,7 @@ exports.getById = (deviceId) => new Promise((resolve, reject) => {
                 reject(error)
                 return
             }
-            if (result) {
+            if (result && result.rows.length > 0) {
                 const device = result.rows[0]
                 device.managementAttributes = device.management_attributes
                 device.monitoringAttributes = device.monitoring_attributes

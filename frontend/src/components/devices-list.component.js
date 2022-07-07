@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from "react";
 import DeviceDataService from "../services/device.service";
 import {Link} from "react-router-dom";
-import {CheckCircle, XCircle, Book, Pencil, Trash} from 'react-bootstrap-icons'
-
-// import * as React from 'react';
+import {Book, Pencil, Trash} from 'react-bootstrap-icons'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -11,9 +9,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import {Container} from "@mui/material";
 
-export const DevicesList = () => {
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+
+const DevicesList = () => {
     const [devices, setDevices] = useState([])
 
     useEffect(() => {
@@ -68,7 +68,7 @@ export const DevicesList = () => {
                             <TableCell align="right">{device.type}</TableCell>
                             <TableCell align="right">{device.ip}</TableCell>
                             <TableCell align="right">{device.mac}</TableCell>
-                            <TableCell align="right">{device.active}</TableCell>
+                            <TableCell align="right">{device.active ? <CheckCircleIcon/> : <CancelIcon/>}</TableCell>
                             <TableCell align="right">
                                 <Link to={`/devices/${device.id}`}>
                                     <Book/>
@@ -85,3 +85,5 @@ export const DevicesList = () => {
         </TableContainer>
     );
 }
+
+export default DevicesList

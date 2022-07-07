@@ -1,22 +1,41 @@
+//Controller module
+
+const {validationResult} = require('express-validator');
+const {
+    BULB_STATES,
+    BULB_COLORS,
+    RADIATOR_STATES,
+    TV_STATES,
+    FRIDGE_STATES,
+    KETTLE_STATES
+} = require('../routes/validators');
 const dao = require("../db/dao.js");
 
-const BULB_STATES = ['on', 'off']
-const BULB_COLORS = ['red', 'green', 'yellow', 'white']
+Array.prototype.random = () => {
+    return this[Math.floor(Math.random() * this.length)]
+}
 
-const RADIATOR_STATES = ['heating', 'cooling', 'off']
-
-const TV_STATES = ['on', 'off', 'sleeping']
-
-const FRIDGE_STATES = ['on', 'off', 'maintenance']
-
-const KETTLE_STATES = ['on', 'off']
-
-Array.prototype.random = function() {
-    return this[Math.floor(Math.random()*this.length)]
+const validate = (req) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return {
+            message: errors.array()
+                .map((error) => {
+                    return `Field '${error.param}' ${error.msg}, passed value: ${error.value}`
+                })
+                .join("<br>")
+        };
+    }
 }
 
 // Create a new device
 exports.create = (req, res) => {
+    const validation = validate(req)
+    if (validation) {
+        res.status(400).send(validation)
+        return;
+    }
+
     const device = req.body
 
     switch (device.type) {
@@ -65,7 +84,7 @@ exports.create = (req, res) => {
         })
         .catch(err => {
             res.status(500).send({
-                message:  `Error creating device: ${err.message}`
+                message: `Error creating device: ${err.message}`
             });
         });
 };
@@ -86,9 +105,14 @@ exports.getAll = (req, res) => {
         });
 };
 
-
 // Get a single device by id
 exports.getById = (req, res) => {
+    const validation = validate(req)
+    if (validation) {
+        res.status(400).send(validation)
+        return;
+    }
+
     dao.getById(req.params.id)
         .then(device => {
             if (device) {
@@ -108,6 +132,12 @@ exports.getById = (req, res) => {
 
 // Update a device by id
 exports.update = (req, res) => {
+    const validation = validate(req)
+    if (validation) {
+        res.status(400).send(validation)
+        return;
+    }
+
     dao.update(req.params.id, req.body)
         .then(affectedRows => {
             if (affectedRows === 0) {
@@ -128,9 +158,14 @@ exports.update = (req, res) => {
         });
 };
 
-
-// Delete a Tutorial with the specified id in the request
+// Delete a device with the specified id
 exports.delete = (req, res) => {
+    const validation = validate(req)
+    if (validation) {
+        res.status(400).send(validation)
+        return;
+    }
+
     dao.delete(req.params.id)
         .then(affectedRows => {
             if (affectedRows === 0) {

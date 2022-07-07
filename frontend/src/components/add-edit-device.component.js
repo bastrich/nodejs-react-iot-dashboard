@@ -1,15 +1,26 @@
-import React, {Component} from "react";
+import React from "react";
 import DeviceDataService from "../services/device.service";
-import {NotificationContainer, NotificationManager} from 'react-notifications';
+import {NotificationManager} from 'react-notifications';
 
 import 'react-notifications/lib/notifications.css';
 
 import {
     // useLocation,
-    // useNavigate,
+    useNavigate,
     useParams
 } from "react-router-dom";
-import {useEffect, useState} from "@types/react";
+import {useEffect, useState} from "react";
+import {
+    Checkbox,
+    FormControl,
+    FormControlLabel,
+    FormGroup,
+    InputLabel,
+    MenuItem,
+    Select, Slider,
+    TextField
+} from "@mui/material";
+import Button from "@mui/material/Button";
 
 const BULB_STATES = ['on', 'off']
 const BULB_COLORS = ['red', 'green', 'yellow', 'white']
@@ -22,173 +33,130 @@ const FRIDGE_STATES = ['on', 'off', 'maintenance']
 
 const KETTLE_STATES = ['on', 'off']
 
-export const AddEditDevice = () => {
+const AddEditDevice = () => {
+    const navigate = useNavigate();
 
     const [id, setId] = useState(useParams().id || null)
     const [name, setName] = useState("")
-    const [type, setType] = useState("")
+    const [type, setType] = useState("BULB")
     const [ip, setIp] = useState("")
     const [mac, setMac] = useState("")
-    const [managementAttributes, setManagementAttributes] = useState({})
-    const [monitoringAttributes, setMonitoringAttributes] = useState({})
-    this.state = {
-        id: null, name: "", type: "BULB", ip: "", mac: "", active: false, managementAttributes: {
-            status: "on", color: "white", brightness: 50
-        }, mode: "CREATE"
-    };
+    const [active, setActive] = useState(false)
+    const [managementAttributes, setManagementAttributes] = useState({
+        status: "on", color: "white", brightness: 50
+    })
+    const [mode, setMode] = useState("CREATE")
 
     useEffect(() => {
-        const deviceId = this.props.router.params.id
-        if (deviceId) {
-            this.getDevice(deviceId);
-            this.setState({
-                mode: "EDIT"
-            });
+        if (id) {
+            getDevice(id);
+            setMode("EDIT")
         } else {
-            this.setState({
-                mode: "CREATE"
-            });
+            setMode("CREATE")
         }
-    });
+    }, [id]);
 
 
     const onChangeName = (e) => {
         setName(e.target.value)
     }
 
-    onChangeType(e) {
-        const type = e.target.value
-        let managementAttributes
-        switch (type) {
+    const onChangeType = (e) => {
+        const chosenType = e.target.value
+        switch (chosenType) {
             case "BULB":
-                managementAttributes = {
+                setManagementAttributes({
                     status: "on", color: "white", brightness: 50
-                }
+                })
                 break;
             case "RADIATOR":
-                managementAttributes = {
+                setManagementAttributes({
                     status: "heating", temperature: 50
-                }
+                })
                 break;
             case "TV":
-                managementAttributes = {
+                setManagementAttributes({
                     status: "on", brightness: 50, volume: 20
-                }
+                })
                 break;
             case "FRIDGE":
-                managementAttributes = {
+                setManagementAttributes({
                     status: "on", temperature: 10
-                }
+                })
                 break;
             case "KETTLE":
-                managementAttributes = {
+                setManagementAttributes({
                     status: "on", heaterTemperature: 80
-                }
+                })
                 break;
         }
-        this.setState({
-            type: type, managementAttributes: managementAttributes
-        });
+        setType(chosenType)
     }
 
-    onChangeIp(e) {
-        this.setState({
-            ip: e.target.value
-        });
+    const onChangeIp = (e) => {
+        setIp(e.target.value)
     }
 
-    onChangeMac(e) {
-        this.setState({
-            mac: e.target.value
-        });
+    const onChangeMac = (e) => {
+        setMac(e.target.value)
     }
 
-    onChangeActive(e) {
-        this.setState({
-            active: e.target.value
-        });
+    const onChangeActive = (e) => {
+        setActive(e.target.checked)
     }
 
-    onChangeStatus(e) {
-        const managementAttributes = {...this.state.managementAttributes}
-        managementAttributes.status = e.target.value
-        this.setState({
-            managementAttributes: managementAttributes
-        });
+    const onChangeStatus = (e) => {
+        setManagementAttributes({...managementAttributes, status: e.target.value})
     }
 
-    onChangeColor(e) {
-        const managementAttributes = {...this.state.managementAttributes}
-        managementAttributes.color = e.target.value
-        this.setState({
-            managementAttributes: managementAttributes
-        });
+    const onChangeColor = (e) => {
+        setManagementAttributes({...managementAttributes, color: e.target.value})
     }
 
-    onChangeBrightness(e) {
-        const managementAttributes = {...this.state.managementAttributes}
-        managementAttributes.brightness = e.target.value
-        this.setState({
-            managementAttributes: managementAttributes
-        });
+    const onChangeBrightness = (e) => {
+        setManagementAttributes({...managementAttributes, brightness: e.target.value})
     }
 
-    onChangeTemperature(e) {
-        const managementAttributes = {...this.state.managementAttributes}
-        managementAttributes.temperature = e.target.value
-        this.setState({
-            managementAttributes: managementAttributes
-        });
+    const onChangeTemperature = (e) => {
+        setManagementAttributes({...managementAttributes, temperature: e.target.value})
     }
 
-    onChangeVolume(e) {
-        const managementAttributes = {...this.state.managementAttributes}
-        managementAttributes.volume = e.target.value
-        this.setState({
-            managementAttributes: managementAttributes
-        });
+    const onChangeVolume = (e) => {
+        setManagementAttributes({...managementAttributes, volume: e.target.value})
     }
 
-    onChangeHeaterTemperature(e) {
-        const managementAttributes = {...this.state.managementAttributes}
-        managementAttributes.heaterTemperature = e.target.value
-        this.setState({
-            managementAttributes: managementAttributes
-        });
+    const onChangeHeaterTemperature = (e) => {
+        setManagementAttributes({...managementAttributes, heaterTemperature: e.target.value})
     }
 
-    getDevice(id) {
+    const getDevice = (id) => {
         DeviceDataService.getById(id)
             .then(response => {
-                this.setState({
-                    id: response.data.id,
-                    name: response.data.name,
-                    type: response.data.type,
-                    ip: response.data.ip,
-                    mac: response.data.mac,
-                    active: response.data.active,
-                    managementAttributes: response.data.managementAttributes
-                });
+                setId(response.data.id)
+                setName(response.data.name)
+                setType(response.data.type)
+                setIp(response.data.ip)
+                setMac(response.data.mac)
+                setActive(response.data.active)
+                setManagementAttributes(response.data.managementAttributes)
             })
             .catch(e => {
 
             });
     }
 
-    createDevice() {
+    const createDevice = () => {
         const device = {
-            name: this.state.name,
-            type: this.state.type,
-            ip: this.state.ip,
-            mac: this.state.mac,
-            active: this.state.active,
-            managementAttributes: this.state.managementAttributes
+            name: name,
+            type: type,
+            ip: ip,
+            mac: mac,
+            active: active,
+            managementAttributes: managementAttributes
         };
         DeviceDataService.create(device)
             .then(response => {
-                this.setState({
-                    id: response.data.id, mode: "EDIT"
-                });
+                navigate(`/devices/${response.data.id}/edit`);
                 NotificationManager.success(`Device successfully created with id ${response.data.id}`)
             })
             .catch(error => {
@@ -200,18 +168,18 @@ export const AddEditDevice = () => {
             });
     }
 
-    updateDevice() {
-        let device = {
-            name: this.state.name,
-            type: this.state.type,
-            ip: this.state.ip,
-            mac: this.state.mac,
-            active: this.state.active,
-            managementAttributes: this.state.managementAttributes
+    const updateDevice = () => {
+        const device = {
+            name: name,
+            type: type,
+            ip: ip,
+            mac: mac,
+            active: active,
+            managementAttributes: managementAttributes
         };
-        DeviceDataService.update(this.state.id, device)
+        DeviceDataService.update(id, device)
             .then(response => {
-                NotificationManager.success(`Device ${this.state.id} successfully updated`)
+                NotificationManager.success(`Device ${id} successfully updated`)
             })
             .catch(error => {
                 if (error.response) {
@@ -222,225 +190,215 @@ export const AddEditDevice = () => {
             });
     }
 
-    renderStatusOptions(options) {
-        return (<div className="form-group">
-                <label htmlFor="status">Target Status</label>
-                <select
-                    className="form-control"
+    const renderStatusOptions = (options) => {
+        return (
+            <FormControl>
+                <InputLabel id="status-lable">Target Status</InputLabel>
+                <Select
+                    labelId="status-lable"
                     id="status"
-                    required
-                    value={this.state.managementAttributes.status}
-                    onChange={this.onChangeStatus}
-                    name="status"
+                    value={managementAttributes.status}
+                    label="Target Status"
+                    onChange={onChangeStatus}
                 >
-                    {options.map((state, i) => {
-                        return (<option value={state} key={state}>{state}</option>)
+                    {options.map((option) => {
+                        return (<MenuItem key={option} value={option}>{option}</MenuItem>)
                     })}
-                </select>
-            </div>)
+                </Select>
+            </FormControl>
+        )
     }
 
-    renderStatusSelector() {
-        switch (this.state.type) {
+    const renderStatusSelector = () => {
+        switch (type) {
             case "BULB":
-                return this.renderStatusOptions(BULB_STATES);
+                return renderStatusOptions(BULB_STATES);
             case "RADIATOR":
-                return this.renderStatusOptions(RADIATOR_STATES);
+                return renderStatusOptions(RADIATOR_STATES);
             case "TV":
-                return this.renderStatusOptions(TV_STATES);
+                return renderStatusOptions(TV_STATES);
             case "FRIDGE":
-                return this.renderStatusOptions(FRIDGE_STATES);
+                return renderStatusOptions(FRIDGE_STATES);
             case "KETTLE":
-                return this.renderStatusOptions(KETTLE_STATES);
+                return renderStatusOptions(KETTLE_STATES);
         }
 
         return null;
     }
 
-    renderColorSelector() {
-        if (this.state.type === "BULB") {
-            return (<div className="form-group">
-                    <label htmlFor="color">Target Status</label>
-                    <select
-                        className="form-control"
+    const renderColorSelector = () => {
+        if (type === "BULB") {
+            return (
+                <FormControl>
+                    <InputLabel id="color-lable">Color</InputLabel>
+                    <Select
+                        labelId="color-lable"
                         id="color"
-                        required
-                        value={this.state.managementAttributes.color}
-                        onChange={this.onChangeColor}
-                        name="color"
+                        value={managementAttributes.color}
+                        label="Color"
+                        onChange={onChangeColor}
                     >
-                        {BULB_COLORS.map((color, i) => {
-                            return (<option value={color} key={color}>{color}</option>)
+                        {BULB_COLORS.map((color) => {
+                            return (<MenuItem key={color} value={color}>{color}</MenuItem>)
                         })}
-                    </select>
-                </div>)
+                    </Select>
+                </FormControl>
+            )
         }
         return null
     }
 
-    renderBrightnessSlider() {
-        if (["BULB", "TV"].includes(this.state.type)) {
-            return (<div className="form-group">
-                    <label htmlFor="brightness">Target Brightness</label>
-                    <input
-                        type="range"
-                        // className="form-control"
+    const renderBrightnessSlider = () => {
+        if (["BULB", "TV"].includes(type)) {
+            return (
+                <FormControlLabel
+                    control={<Slider
                         id="brightness"
-                        required
-                        value={this.state.managementAttributes.brightness}
-                        min="1"
-                        max="100"
-                        onChange={this.onChangeBrightness}
-                        name="brightness"
-                    />
-                </div>)
+                        value={managementAttributes.brightness}
+                        min={1}
+                        max={100}
+                        onChange={onChangeBrightness}
+                        aria-label="Default"
+                        valueLabelDisplay="auto"
+                    />}
+                    label="Target Brightness"
+                />
+            )
         }
         return null
     }
 
-    renderTemperatureSlider() {
-        if (["RADIATOR", "FRIDGE"].includes(this.state.type)) {
-            return (<div className="form-group">
-                    <label htmlFor="temperature">Target Temperature</label>
-                    <input
-                        type="range"
-                        className="form-control"
+    const renderTemperatureSlider = () => {
+        if (["RADIATOR", "FRIDGE"].includes(type)) {
+            return (
+                <FormControlLabel
+                    control={<Slider
                         id="temperature"
-                        required
-                        value={this.state.managementAttributes.temperature}
-                        min="1"
-                        max="100"
-                        onChange={this.onChangeTemperature}
-                        name="temperature"
-                    />
-                </div>)
+                        value={managementAttributes.temperature || 50}
+                        min={1}
+                        max={100}
+                        onChange={onChangeTemperature}
+                        aria-label="Default"
+                        valueLabelDisplay="auto"
+                    />}
+                    label="Target Temperature"
+                />
+            )
         }
         return null
     }
 
-    renderVolumeSlider() {
-        if (this.state.type === "TV") {
-            return (<div className="form-group">
-                    <label htmlFor="volume">Target Volume</label>
-                    <input
-                        type="range"
-                        className="form-control"
+    const renderVolumeSlider = () => {
+        if (type === "TV") {
+            return (
+                <FormControlLabel
+                    control={<Slider
                         id="volume"
-                        required
-                        value={this.state.managementAttributes.volume}
-                        min="1"
-                        max="100"
-                        onChange={this.onChangeVolume}
-                        name="volume"
-                    />
-                </div>)
+                        value={managementAttributes.volume || 50}
+                        min={1}
+                        max={100}
+                        onChange={onChangeVolume}
+                        aria-label="Default"
+                        valueLabelDisplay="auto"
+                    />}
+                    label="Target Volume"
+                />
+            )
         }
         return null
     }
 
-    renderHeaterTemperatureSlider() {
-        if (this.state.type === "KETTLE") {
-            return (<div className="form-group">
-                    <label htmlFor="heater-temperature">Target Heater Temperature</label>
-                    <input
-                        type="range"
-                        className="form-control"
+    const renderHeaterTemperatureSlider = () => {
+        if (type === "KETTLE") {
+            return (
+                <FormControlLabel
+                    control={<Slider
                         id="heater-temperature"
-                        required
-                        value={this.state.managementAttributes.heaterTemperature}
-                        min="1"
-                        max="100"
-                        onChange={this.onChangeHeaterTemperature}
-                        name="heater-temperature"
-                    />
-                </div>)
+                        value={managementAttributes.heaterTemperature || 50}
+                        min={1}
+                        max={100}
+                        onChange={onChangeHeaterTemperature}
+                        aria-label="Default"
+                        valueLabelDisplay="auto"
+                    />}
+                    label="Target Heater Temperature"
+                />
+            )
         }
         return null
     }
 
-    render() {
-        return (<div className="submit-form">
-                <div>
-                    <div className="form-group">
-                        <label htmlFor="name">Name</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="name"
-                            required
-                            value={this.state.name}
-                            onChange={this.onChangeName}
-                            name="name"
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="type">Type</label>
-                        <select
-                            className="form-control"
-                            id="type"
-                            required
-                            value={this.state.type}
-                            onChange={this.onChangeType}
-                            name="type"
-                        >
-                            <option value="BULB">BULB</option>
-                            <option value="RADIATOR">RADIATOR</option>
-                            <option value="TV">TV</option>
-                            <option value="FRIDGE">FRIDGE</option>
-                            <option value="KETTLE">KETTLE</option>
-                        </select>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="ip">IP</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="ip"
-                            required
-                            value={this.state.ip}
-                            onChange={this.onChangeIp}
-                            name="ip"
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="mac">MAC</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="mac"
-                            required
-                            value={this.state.mac}
-                            onChange={this.onChangeMac}
-                            name="mac"
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="active">Active</label>
-                        <input
-                            type="checkbox"
-                            // className="form-control"
-                            id="active"
-                            required
-                            checked={this.state.active}
-                            value={this.state.active}
-                            onChange={this.onChangeActive}
-                            name="active"
-                        />
-                    </div>
+        return (
+            <FormGroup
+                component="form"
+                sx={{
+                    '& .MuiTextField-root': { m: 1},
+                }}
+                noValidate
+                autoComplete="off"
+            >
+                <TextField
+                    id="name"
+                    label="Name"
+                    variant="outlined"
+                    value={name}
+                    onChange={onChangeName}
+                    required
+                />
+                <FormControl fullWidth>
+                    <InputLabel id="type-lable">Type</InputLabel>
+                    <Select
+                        labelId="type-lable"
+                        id="type"
+                        value={type}
+                        label="Type"
+                        onChange={onChangeType}
+                    >
+                        <MenuItem value="BULB">BULB</MenuItem>
+                        <MenuItem value="RADIATOR">RADIATOR</MenuItem>
+                        <MenuItem value="TV">TV</MenuItem>
+                        <MenuItem value="FRIDGE">FRIDGE</MenuItem>
+                        <MenuItem value="KETTLE">KETTLE</MenuItem>
+                    </Select>
+                </FormControl>
+                <TextField
+                    id="ip"
+                    label="IP"
+                    variant="outlined"
+                    value={ip}
+                    onChange={onChangeIp}
+                    required
+                />
+                <TextField
+                    id="mac"
+                    label="MAC"
+                    variant="outlined"
+                    value={mac}
+                    onChange={onChangeMac}
+                    required
+                />
+                <FormControlLabel
+                    control={<Checkbox
+                        id="active"
+                        checked={active}
+                        onChange={onChangeActive}
+                    />}
+                    label="Active"
+                />
+                {renderStatusSelector()}
+                {renderColorSelector()}
+                {renderBrightnessSlider()}
+                {renderTemperatureSlider()}
+                {renderVolumeSlider()}
+                {renderHeaterTemperatureSlider()}
 
-                    {this.renderStatusSelector()}
-                    {this.renderColorSelector()}
-                    {this.renderBrightnessSlider()}
-                    {this.renderTemperatureSlider()}
-                    {this.renderVolumeSlider()}
-                    {this.renderHeaterTemperatureSlider()}
+                <Button
+                    onClick={mode === "CREATE" ? createDevice : updateDevice}
+                >
+                    {mode === "CREATE" ? (<p>Create</p>) : (<p>Update</p>)}
+                </Button>
+            </FormGroup>
+        );
+}
 
-                    <button onClick={this.state.mode === "CREATE" ? this.createDevice : this.updateDevice}
-                            className="btn btn-success">
-                        {this.state.mode === "CREATE" ? (<p>Create</p>) : (<p>Update</p>)}
-                    </button>
-                </div>
-            <NotificationContainer/>
-            </div>);
-    }
-})
+export default AddEditDevice
