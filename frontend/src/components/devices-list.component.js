@@ -19,11 +19,11 @@ import {
     Button
 } from '@mui/material';
 import {
-    CheckCircleIcon,
-    CancelIcon,
-    PreviewIcon,
-    EditIcon,
-    DeleteIcon
+    CheckCircle,
+    Cance,
+    Preview,
+    Edit,
+    Delete
 } from '@mui/icons-material';
 import {NotificationManager} from 'react-notifications';
 
@@ -101,7 +101,7 @@ const DevicesList = () => {
                                 <TableCell align="right">{device.ip}</TableCell>
                                 <TableCell align="right">{device.mac}</TableCell>
                                 <TableCell align="right">
-                                    {device.active ? <CheckCircleIcon sx={{color: "green"}}/> : <CancelIcon sx={{color: "red"}}/>}
+                                    {device.active ? <CheckCircle sx={{color: "green"}}/> : <Cancel sx={{color: "red"}}/>}
                                 </TableCell>
                                 <TableCell align="right">
                                     <IconButton
@@ -112,7 +112,7 @@ const DevicesList = () => {
                                             '&:hover': {color: 'PeachPuff'}
                                         }}
                                     >
-                                        <PreviewIcon/>
+                                        <Preview/>
                                     </IconButton>
                                     <IconButton
                                         component={Link}
@@ -122,7 +122,7 @@ const DevicesList = () => {
                                             '&:hover': {color: 'CornflowerBlue'}
                                         }}
                                     >
-                                        <EditIcon/>
+                                        <Edit/>
                                     </IconButton>
                                     <IconButton
                                         onClick={() => onClickDelete(device.id)}
@@ -131,7 +131,7 @@ const DevicesList = () => {
                                             '&:hover': {color: 'red'}
                                         }}
                                     >
-                                        <DeleteIcon/>
+                                        <Delete/>
                                     </IconButton>
                                 </TableCell>
                             </TableRow>

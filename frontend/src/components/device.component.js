@@ -12,7 +12,7 @@ import {
     TableContainer,
     Container
 } from "@mui/material";
-import {CheckCircleIcon, CancelIcon} from "@mui/icons-material";
+import {CheckCircle, Cancel} from "@mui/icons-material";
 
 const Device = () => {
     const [id, setId] = useState(useParams().id);
@@ -153,8 +153,8 @@ const Device = () => {
                         {renderAttributeRow("Type", type)}
                         {renderAttributeRow("IP", ip)}
                         {renderAttributeRow("MAC", mac)}
-                        {renderAttributeRow("Active", active ? <CheckCircleIcon sx={{color: "green"}}/> :
-                            <CancelIcon sx={{color: "red"}}/>)}
+                        {renderAttributeRow("Active", active ? <CheckCircle sx={{color: "green"}}/> :
+                            <Cancel sx={{color: "red"}}/>)}
 
                         <TableRow
                             hover
