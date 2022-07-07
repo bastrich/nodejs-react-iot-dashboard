@@ -1,13 +1,10 @@
+//Renders Create and Edit pages
+
 import React from "react";
 import DeviceDataService from "../services/device.service";
 import {NotificationManager} from 'react-notifications';
-
 import 'react-notifications/lib/notifications.css';
-
-import {
-    useNavigate,
-    useParams
-} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {
     Checkbox,
@@ -16,20 +13,20 @@ import {
     InputLabel,
     MenuItem,
     Select, Slider, Stack,
-    TextField
+    TextField,
+    Button
 } from "@mui/material";
-import Button from "@mui/material/Button";
 
-const BULB_STATES = ['on', 'off']
-const BULB_COLORS = ['red', 'green', 'yellow', 'white']
+const BULB_STATES = ['on', 'off'];
+const BULB_COLORS = ['red', 'green', 'yellow', 'white'];
 
-const RADIATOR_STATES = ['heating', 'cooling', 'off']
+const RADIATOR_STATES = ['heating', 'cooling', 'off'];
 
-const TV_STATES = ['on', 'off', 'sleeping']
+const TV_STATES = ['on', 'off', 'sleeping'];
 
-const FRIDGE_STATES = ['on', 'off', 'maintenance']
+const FRIDGE_STATES = ['on', 'off', 'maintenance'];
 
-const KETTLE_STATES = ['on', 'off']
+const KETTLE_STATES = ['on', 'off'];
 
 const SubmitButton = (props) => {
     return (
@@ -48,33 +45,33 @@ const SubmitButton = (props) => {
         >
             {props.text}
         </Button>
-    )
+    );
 }
 
 const AddEditDevice = () => {
     const navigate = useNavigate();
 
-    const [id, setId] = useState(useParams().id || null)
-    const [name, setName] = useState("")
-    const [type, setType] = useState("BULB")
-    const [ip, setIp] = useState("")
-    const [mac, setMac] = useState("")
-    const [active, setActive] = useState(false)
+    const [id, setId] = useState(useParams().id || null);
+    const [name, setName] = useState("");
+    const [type, setType] = useState("BULB");
+    const [ip, setIp] = useState("");
+    const [mac, setMac] = useState("");
+    const [active, setActive] = useState(false);
     const [managementAttributes, setManagementAttributes] = useState({
         status: "on", color: "white", brightness: 50
-    })
+    });
 
-    const [mode, setMode] = useState("CREATE")
-    const [nameHelperText, setNameHelperText] = useState("")
-    const [ipHelperText, setIpHelperText] = useState("")
-    const [macHelperText, setMacHelperText] = useState("")
+    const [mode, setMode] = useState("CREATE");
+    const [nameHelperText, setNameHelperText] = useState("");
+    const [ipHelperText, setIpHelperText] = useState("");
+    const [macHelperText, setMacHelperText] = useState("");
 
     useEffect(() => {
         if (id) {
             getDevice(id);
-            setMode("EDIT")
+            setMode("EDIT");
         } else {
-            setMode("CREATE")
+            setMode("CREATE");
         }
     }, [id]);
 
@@ -83,111 +80,111 @@ const AddEditDevice = () => {
             return null;
         }
         return "'Name' should be alphanumeric (space, - and _ are also allowed) string with length from 1 to 50";
-    }
+    };
 
     const onChangeName = (e) => {
-        const validationMessage = validateName(e.target.value)
+        const validationMessage = validateName(e.target.value);
         if (validationMessage) {
-            setNameHelperText(validationMessage)
+            setNameHelperText(validationMessage);
         } else {
-            setNameHelperText("")
+            setNameHelperText("");
         }
-        setName(e.target.value)
-    }
+        setName(e.target.value);
+    };
 
     const onChangeType = (e) => {
-        const chosenType = e.target.value
+        const chosenType = e.target.value;
         switch (chosenType) {
             case "BULB":
                 setManagementAttributes({
                     status: "on", color: "white", brightness: 50
-                })
+                });
                 break;
             case "RADIATOR":
                 setManagementAttributes({
                     status: "heating", temperature: 50
-                })
+                });
                 break;
             case "TV":
                 setManagementAttributes({
                     status: "on", brightness: 50, volume: 20
-                })
+                });
                 break;
             case "FRIDGE":
                 setManagementAttributes({
                     status: "on", temperature: 10
-                })
+                });
                 break;
             case "KETTLE":
                 setManagementAttributes({
                     status: "on", heaterTemperature: 80
-                })
+                });
                 break;
         }
-        setType(chosenType)
-    }
+        setType(chosenType);
+    };
 
     const validateIp = (value) => {
         if (/^(25[0-5]|2[0-4]\d|[01]?\d\d?)\.(25[0-5]|2[0-4]\d|[01]?\d\d?)\.(25[0-5]|2[0-4]\d|[01]?\d\d?)\.(25[0-5]|2[0-4]\d|[01]?\d\d?)$/.test(value)) {
             return null;
         }
         return "IP should be valid IPv4 address";
-    }
+    };
 
     const onChangeIp = (e) => {
-        const validationMessage = validateIp(e.target.value)
+        const validationMessage = validateIp(e.target.value);
         if (validationMessage) {
-            setIpHelperText(validationMessage)
+            setIpHelperText(validationMessage);
         } else {
-            setIpHelperText("")
+            setIpHelperText("");
         }
-        setIp(e.target.value)
-    }
+        setIp(e.target.value);
+    };
 
     const validateMac = (value) => {
         if (/^[\da-f]{1,2}([\.:-])(?:[\da-f]{1,2}\1){4}[\da-f]{1,2}$/i.test(value)) {
             return null;
         }
         return "MAC should be valid MAC address";
-    }
+    };
 
     const onChangeMac = (e) => {
-        const validationMessage = validateMac(e.target.value)
+        const validationMessage = validateMac(e.target.value);
         if (validationMessage) {
-            setMacHelperText(validationMessage)
+            setMacHelperText(validationMessage);
         } else {
-            setMacHelperText("")
+            setMacHelperText("");
         }
-        setMac(e.target.value)
-    }
+        setMac(e.target.value);
+    };
 
     const onChangeActive = (e) => {
-        setActive(e.target.checked)
-    }
+        setActive(e.target.checked);
+    };
 
     const onChangeStatus = (e) => {
-        setManagementAttributes({...managementAttributes, status: e.target.value})
-    }
+        setManagementAttributes({...managementAttributes, status: e.target.value});
+    };
 
     const onChangeColor = (e) => {
-        setManagementAttributes({...managementAttributes, color: e.target.value})
-    }
+        setManagementAttributes({...managementAttributes, color: e.target.value});
+    };
 
     const onChangeBrightness = (e) => {
-        setManagementAttributes({...managementAttributes, brightness: parseInt(e.target.value)})
-    }
+        setManagementAttributes({...managementAttributes, brightness: parseInt(e.target.value)});
+    };
 
     const onChangeTemperature = (e) => {
-        setManagementAttributes({...managementAttributes, temperature: parseInt(e.target.value)})
-    }
+        setManagementAttributes({...managementAttributes, temperature: parseInt(e.target.value)});
+    };
 
     const onChangeVolume = (e) => {
-        setManagementAttributes({...managementAttributes, volume: parseInt(e.target.value)})
-    }
+        setManagementAttributes({...managementAttributes, volume: parseInt(e.target.value)});
+    };
 
     const onChangeHeaterTemperature = (e) => {
-        setManagementAttributes({...managementAttributes, heaterTemperature: parseInt(e.target.value)})
-    }
+        setManagementAttributes({...managementAttributes, heaterTemperature: parseInt(e.target.value)});
+    };
 
     const getDevice = (id) => {
         DeviceDataService.getById(id)
@@ -203,19 +200,19 @@ const AddEditDevice = () => {
             .catch(e => {
 
             });
-    }
+    };
 
     const validateDevice = (device) => {
-        const nameValidationMessage = validateName(device.name)
-        const ipValidationMessage = validateIp(device.ip)
-        const macValidationMessage = validateMac(device.mac)
+        const nameValidationMessage = validateName(device.name);
+        const ipValidationMessage = validateIp(device.ip);
+        const macValidationMessage = validateMac(device.mac);
 
         return [
             nameValidationMessage,
             ipValidationMessage,
             macValidationMessage
-        ].filter(message => message != null)
-    }
+        ].filter(message => message != null);
+    };
 
     const createDevice = () => {
         const device = {
@@ -227,31 +224,31 @@ const AddEditDevice = () => {
             managementAttributes: managementAttributes
         };
 
-        const validations = validateDevice(device)
+        const validations = validateDevice(device);
         if (validations.length > 0) {
             validations.forEach(validation => {
                 NotificationManager.error(validation, "Error creating a device", 10000)
-            })
+            });
             return;
         }
 
         DeviceDataService.create(device)
             .then(response => {
                 navigate(`/devices/${response.data.id}/edit`);
-                setMode("EDIT")
-                setId(response.data.id)
-                NotificationManager.success(`Device successfully created with id ${response.data.id}`)
+                setMode("EDIT");
+                setId(response.data.id);
+                NotificationManager.success(`Device successfully created with id ${response.data.id}`);
             })
             .catch(error => {
                 if (error.response) {
                     error.response.data.messages.forEach(message => {
                         NotificationManager.error(message, "Error creating a device", 10000)
-                    })
+                    });
                 } else {
-                    NotificationManager.error(`Error creating a device: ${error}`)
+                    NotificationManager.error(`Error creating a device: ${error}`);
                 }
             });
-    }
+    };
 
     const updateDevice = () => {
         const device = {
@@ -263,28 +260,28 @@ const AddEditDevice = () => {
             managementAttributes: managementAttributes
         };
 
-        const validations = validateDevice(device)
+        const validations = validateDevice(device);
         if (validations.length > 0) {
             validations.forEach(validation => {
-                NotificationManager.error(validation, "Error updating the device", 10000)
+                NotificationManager.error(validation, "Error updating the device", 10000);
             })
             return;
         }
 
         DeviceDataService.update(id, device)
             .then(response => {
-                NotificationManager.success(`Device ${id} successfully updated`)
+                NotificationManager.success(`Device ${id} successfully updated`);
             })
             .catch(error => {
                 if (error.response) {
                     error.response.data.messages.forEach(message => {
-                        NotificationManager.error(message, "Error updating the device", 10000)
+                        NotificationManager.error(message, "Error updating the device", 10000);
                     })
                 } else {
-                    NotificationManager.error(`Error updating the device: ${error}`)
+                    NotificationManager.error(`Error updating the device: ${error}`);
                 }
             });
-    }
+    };
 
     const renderStatusOptions = (options) => {
         return (
@@ -302,8 +299,8 @@ const AddEditDevice = () => {
                     })}
                 </Select>
             </FormControl>
-        )
-    }
+        );
+    };
 
     const renderStatusSelector = () => {
         switch (type) {
@@ -320,7 +317,7 @@ const AddEditDevice = () => {
         }
 
         return null;
-    }
+    };
 
     const renderColorSelector = () => {
         if (type === "BULB") {
@@ -339,10 +336,10 @@ const AddEditDevice = () => {
                         })}
                     </Select>
                 </FormControl>
-            )
+            );
         }
-        return null
-    }
+        return null;
+    };
 
     const renderBrightnessSlider = () => {
         if (["BULB", "TV"].includes(type)) {
@@ -360,10 +357,10 @@ const AddEditDevice = () => {
                     />}
                     label="Target Brightness"
                 />
-            )
+            );
         }
-        return null
-    }
+        return null;
+    };
 
     const renderTemperatureSlider = () => {
         if (["RADIATOR", "FRIDGE"].includes(type)) {
@@ -381,10 +378,10 @@ const AddEditDevice = () => {
                     />}
                     label="Target Temperature"
                 />
-            )
+            );
         }
-        return null
-    }
+        return null;
+    };
 
     const renderVolumeSlider = () => {
         if (type === "TV") {
@@ -402,10 +399,10 @@ const AddEditDevice = () => {
                     />}
                     label="Target Volume"
                 />
-            )
+            );
         }
-        return null
-    }
+        return null;
+    };
 
     const renderHeaterTemperatureSlider = () => {
         if (type === "KETTLE") {
@@ -423,10 +420,10 @@ const AddEditDevice = () => {
                     />}
                     label="Target Heater Temperature"
                 />
-            )
+            );
         }
-        return null
-    }
+        return null;
+    };
 
     return (
         <Stack alignItems={"flex-start"} justifyContent={"center"} spacing={2} maxWidth="md">
@@ -498,6 +495,6 @@ const AddEditDevice = () => {
             />
         </Stack>
     );
-}
+};
 
-export default AddEditDevice
+export default AddEditDevice;

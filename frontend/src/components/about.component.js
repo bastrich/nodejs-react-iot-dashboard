@@ -1,6 +1,8 @@
+//Renders About page
+
 import React  from "react";
 import Paper from "@mui/material/Paper";
-import {Container} from "@mui/material";
+import Container from "@mui/material/Container";
 
 const About = () => {
     return (
@@ -13,7 +15,7 @@ const About = () => {
                 Developer: Daniil Bastrich
             </Paper>
         </Container>
-    )
+    );
 }
 
-export default About
+export default About;

@@ -1,32 +1,34 @@
+//Renders Devices List page
+
 import React, {useEffect, useState} from "react";
 import DeviceDataService from "../services/device.service";
 import {Link} from "react-router-dom";
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import PreviewIcon from '@mui/icons-material/Preview';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import {Container, IconButton} from "@mui/material";
-
-import {NotificationManager} from 'react-notifications';
-
 import {
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    Container,
+    IconButton,
     Dialog,
     DialogTitle,
     DialogActions,
-    Button,
+    Button
 } from '@mui/material';
+import {
+    CheckCircleIcon,
+    CancelIcon,
+    PreviewIcon,
+    EditIcon,
+    DeleteIcon
+} from '@mui/icons-material';
+import {NotificationManager} from 'react-notifications';
 
 const DevicesList = () => {
-    const [devices, setDevices] = useState([])
+    const [devices, setDevices] = useState([]);
     const [deleteConfirmationOpen, setDeleteConfirmationOpen] = React.useState(false);
     const [deletingId, setDeletingId] = React.useState(null);
 
@@ -37,12 +39,12 @@ const DevicesList = () => {
     const retrieveDevices = () => {
         DeviceDataService.getAll()
             .then(response => {
-                setDevices(response.data.devices)
+                setDevices(response.data.devices);
             })
             .catch(error => {
                 NotificationManager.error(`${error}`, "Error obtaining devices");
             });
-    }
+    };
 
     const deleteDevice = (deviceId) => {
         DeviceDataService.delete(deviceId)
@@ -53,15 +55,15 @@ const DevicesList = () => {
             .catch(error => {
                  NotificationManager.error(`${error}`, `Error deleting device ${deviceId}`);
             });
-    }
+    };
 
     const onClickDelete = (deviceId) => {
-        setDeletingId(deviceId)
+        setDeletingId(deviceId);
         setDeleteConfirmationOpen(true);
     };
 
     const onClickDeleteConfirm = () => {
-        deleteDevice(deletingId)
+        deleteDevice(deletingId);
         setDeleteConfirmationOpen(false);
     };
 
@@ -147,11 +149,6 @@ const DevicesList = () => {
                 <DialogTitle id="alert-dialog-title">
                     Do you want to delete device {deletingId}?
                 </DialogTitle>
-                {/*<DialogContent>*/}
-                {/*    <DialogContentText id="alert-dialog-description">*/}
-                {/*        Do you want to delete device {deletingId}?*/}
-                {/*    </DialogContentText>*/}
-                {/*</DialogContent>*/}
                 <DialogActions>
                     <Button onClick={onClickDeleteConfirm}>Agree</Button>
                     <Button onClick={onClickDeleteCancel} autoFocus>Disagree</Button>
@@ -160,6 +157,6 @@ const DevicesList = () => {
 
         </Container>
     );
-}
+};
 
-export default DevicesList
+export default DevicesList;

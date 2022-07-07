@@ -1,28 +1,28 @@
+//Renders Device page
+
 import React, {useEffect, useState} from "react";
-import {Link, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import DeviceDataService from "../services/device.service";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import TableBody from "@mui/material/TableBody";
-import {Book, Pencil, Trash} from "react-bootstrap-icons";
-import TableContainer from "@mui/material/TableContainer";
-import {Container, Divider} from "@mui/material";
-import Box from "@mui/material/Box";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
+import {
+    Paper,
+    Table,
+    TableRow,
+    TableCell,
+    TableBody,
+    TableContainer,
+    Container
+} from "@mui/material";
+import {CheckCircleIcon, CancelIcon} from "@mui/icons-material";
 
 const Device = () => {
-    const [id, setId] = useState(useParams().id)
-    const [name, setName] = useState("")
-    const [type, setType] = useState("")
-    const [ip, setIp] = useState("")
-    const [mac, setMac] = useState("")
-    const [active, setActive] = useState(null)
-    const [managementAttributes, setManagementAttributes] = useState({})
-    const [monitoringAttributes, setMonitoringAttributes] = useState({})
+    const [id, setId] = useState(useParams().id);
+    const [name, setName] = useState("");
+    const [type, setType] = useState("");
+    const [ip, setIp] = useState("");
+    const [mac, setMac] = useState("");
+    const [active, setActive] = useState(null);
+    const [managementAttributes, setManagementAttributes] = useState({});
+    const [monitoringAttributes, setMonitoringAttributes] = useState({});
 
     useEffect(() => {
         getDevice(id);
@@ -31,14 +31,14 @@ const Device = () => {
     const getDevice = () => {
         DeviceDataService.getById(id)
             .then(response => {
-                setId(response.data.id)
-                setName(response.data.name)
-                setType(response.data.type)
-                setIp(response.data.ip)
-                setMac(response.data.mac)
-                setActive(response.data.active)
-                setManagementAttributes(response.data.managementAttributes)
-                setMonitoringAttributes(response.data.monitoringAttributes)
+                setId(response.data.id);
+                setName(response.data.name);
+                setType(response.data.type);
+                setIp(response.data.ip);
+                setMac(response.data.mac);
+                setActive(response.data.active);
+                setManagementAttributes(response.data.managementAttributes);
+                setMonitoringAttributes(response.data.monitoringAttributes);
             })
             .catch(e => {
 
@@ -54,8 +54,8 @@ const Device = () => {
                 <TableCell component="th" scope="row">{attributeName}: </TableCell>
                 <TableCell align="right" sx={{'borderLeft': '5px dashed CadetBlue !important'}}>{attributeValue}</TableCell>
             </TableRow>
-        )
-    }
+        );
+    };
 
     const renderManagementAttributes = () => {
         switch (type) {
@@ -66,14 +66,14 @@ const Device = () => {
                         {renderAttributeRow("Color", managementAttributes.color)}
                         {renderAttributeRow("Brightness", managementAttributes.brightness)}
                     </React.Fragment>
-                )
+                );
             case "RADIATOR":
                 return (
                     <React.Fragment>
                         {renderAttributeRow("Status", managementAttributes.status)}
                         {renderAttributeRow("Temperature", managementAttributes.temperature)}
                     </React.Fragment>
-                )
+                );
             case "TV":
                 return (
                     <React.Fragment>
@@ -81,23 +81,23 @@ const Device = () => {
                         {renderAttributeRow("Brightness", managementAttributes.brightness)}
                         {renderAttributeRow("Volume", managementAttributes.volume)}
                     </React.Fragment>
-                )
+                );
             case "FRIDGE":
                 return (
                     <React.Fragment>
                         {renderAttributeRow("Status", managementAttributes.status)}
                         {renderAttributeRow("Temperature", managementAttributes.temperature)}
                     </React.Fragment>
-                )
+                );
             case "KETTLE":
                 return (
                     <React.Fragment>
                         {renderAttributeRow("Status", managementAttributes.status)}
                         {renderAttributeRow("Heater Temperature", managementAttributes.heaterTemperature)}
                     </React.Fragment>
-                )
+                );
         }
-    }
+    };
 
     const renderMonitoringAttributes = () => {
         switch (type) {
@@ -109,14 +109,14 @@ const Device = () => {
                         {renderAttributeRow("Brightness", monitoringAttributes.brightness)}
                         {renderAttributeRow("Temperature", monitoringAttributes.temperature)}
                     </React.Fragment>
-                )
+                );
             case "RADIATOR":
                 return (
                     <React.Fragment>
                         {renderAttributeRow("Status", monitoringAttributes.status)}
                         {renderAttributeRow("Temperature", monitoringAttributes.temperature)}
                     </React.Fragment>
-                )
+                );
             case "TV":
                 return (
                     <React.Fragment>
@@ -124,14 +124,14 @@ const Device = () => {
                         {renderAttributeRow("Brightness", monitoringAttributes.brightness)}
                         {renderAttributeRow("Volume", monitoringAttributes.volume)}
                     </React.Fragment>
-                )
+                );
             case "FRIDGE":
                 return (
                     <React.Fragment>
                         {renderAttributeRow("Status", monitoringAttributes.status)}
                         {renderAttributeRow("Temperature", monitoringAttributes.temperature)}
                     </React.Fragment>
-                )
+                );
             case "KETTLE":
                 return (
                     <React.Fragment>
@@ -139,9 +139,9 @@ const Device = () => {
                         {renderAttributeRow("Heater Temperature", monitoringAttributes.heaterTemperature)}
                         {renderAttributeRow("Water Temperature", monitoringAttributes.waterTemperature)}
                     </React.Fragment>
-                )
+                );
         }
-    }
+    };
 
     return (
         <Container maxWidth="sm">
@@ -179,7 +179,7 @@ const Device = () => {
                 </Table>
             </TableContainer>
         </Container>
-    )
-}
+    );
+};
 
-export default Device
+export default Device;

@@ -2,10 +2,10 @@
 
 import React from "react";
 import {Link, Route, Routes, useMatch} from "react-router-dom";
-import DevicesList from './components/devices-list.component'
-import AddEditDevice from './components/add-edit-device.component'
-import Device from './components/device.component'
-import About from './components/about.component'
+import DevicesList from './components/devices-list.component';
+import AddEditDevice from './components/add-edit-device.component';
+import Device from './components/device.component';
+import About from './components/about.component';
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import OnlinePredictionIcon from '@mui/icons-material/OnlinePrediction';
@@ -31,13 +31,13 @@ const MenuButton = (props) => {
         >
             {props.text}
         </Button>
-    )
-}
+    );
+};
 
 const App = () => {
-    const isMainPage = !!useMatch("/") | !!useMatch("/devices")
-    const isAddPage = useMatch("/devices/add")
-    const isAboutPage = useMatch("/about")
+    const isMainPage = !!useMatch("/") | !!useMatch("/devices");
+    const isAddPage = useMatch("/devices/add");
+    const isAboutPage = useMatch("/about");
 
     return (
         <Stack alignItems={"center"} justifyContent={"center"} spacing={2}>
@@ -86,6 +86,6 @@ const App = () => {
             <NotificationContainer/>
         </Stack>
     );
-}
+};
 
 export default App;
