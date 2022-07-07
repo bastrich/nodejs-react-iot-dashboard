@@ -12,8 +12,8 @@ const {
 const dao = require("../db/dao.js");
 
 Array.prototype.random = () => {
-    return this[Math.floor(Math.random() * this.length)]
-}
+    return this[Math.floor(Math.random() * this.length)];
+};
 
 const validate = (req) => {
     const errors = validationResult(req);
@@ -26,17 +26,17 @@ const validate = (req) => {
                 .join("<br>")
         };
     }
-}
+};
 
 // Create a new device
 exports.create = (req, res) => {
-    const validation = validate(req)
+    const validation = validate(req);
     if (validation) {
-        res.status(400).send(validation)
+        res.status(400).send(validation);
         return;
     }
 
-    const device = req.body
+    const device = req.body;
 
     switch (device.type) {
         case "BULB":
@@ -45,33 +45,33 @@ exports.create = (req, res) => {
                 color: BULB_COLORS.random(),
                 brightness: Math.floor(Math.random() * 100) + 1,
                 temperature: Math.floor(Math.random() * 100) + 1
-            }
+            };
             break;
         case "RADIATOR":
             device.monitoring_attributes = {
                 status: RADIATOR_STATES.random(),
                 temperature: Math.floor(Math.random() * 100) + 1
-            }
+            };
             break;
         case "TV":
             device.monitoring_attributes = {
                 status: TV_STATES.random(),
                 brightness: Math.floor(Math.random() * 100) + 1,
                 volume: Math.floor(Math.random() * 100) + 1
-            }
+            };
             break;
         case "FRIDGE":
             device.monitoring_attributes = {
                 status: FRIDGE_STATES.random(),
                 temperature: Math.floor(Math.random() * 100) + 1
-            }
+            };
             break;
         case "KETTLE":
             device.monitoring_attributes = {
                 status: KETTLE_STATES.random(),
                 heaterTemperature: Math.floor(Math.random() * 100) + 1,
                 waterTemperature: Math.floor(Math.random() * 100) + 1
-            }
+            };
             break;
     }
 
@@ -79,7 +79,7 @@ exports.create = (req, res) => {
         .then(id => {
             const response = {
                 id: id
-            }
+            };
             res.send(response);
         })
         .catch(err => {
@@ -95,7 +95,7 @@ exports.getAll = (req, res) => {
         .then(devices => {
             const response = {
                 devices: devices
-            }
+            };
             res.send(response);
         })
         .catch(err => {
@@ -107,9 +107,9 @@ exports.getAll = (req, res) => {
 
 // Get a single device by id
 exports.getById = (req, res) => {
-    const validation = validate(req)
+    const validation = validate(req);
     if (validation) {
-        res.status(400).send(validation)
+        res.status(400).send(validation);
         return;
     }
 
@@ -132,11 +132,11 @@ exports.getById = (req, res) => {
 
 // Update a device by id
 exports.update = (req, res) => {
-    const validation = validate(req)
+    const validation = validate(req);
     if (validation) {
-        res.status(400).send(validation)
+        res.status(400).send(validation);
         return;
-    }
+    };
 
     dao.update(req.params.id, req.body)
         .then(affectedRows => {
@@ -147,7 +147,7 @@ exports.update = (req, res) => {
             } else {
                 const response = {
                     affectedDevices: affectedRows
-                }
+                };
                 res.send(response);
             }
         })
@@ -160,9 +160,9 @@ exports.update = (req, res) => {
 
 // Delete a device with the specified id
 exports.delete = (req, res) => {
-    const validation = validate(req)
+    const validation = validate(req);
     if (validation) {
-        res.status(400).send(validation)
+        res.status(400).send(validation);
         return;
     }
 
@@ -175,7 +175,7 @@ exports.delete = (req, res) => {
             } else {
                 const response = {
                     affectedDevices: affectedRows
-                }
+                };
                 res.send(response);
             }
         })

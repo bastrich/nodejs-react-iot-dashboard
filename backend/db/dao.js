@@ -1,7 +1,7 @@
 //Data Access Object Module
 
-const dbConfigs = require('./config')
-const {Pool} = require('pg')
+const dbConfigs = require('./config');
+const {Pool} = require('pg');
 
 const pool = new Pool({
     host: dbConfigs.HOST,
@@ -9,8 +9,8 @@ const pool = new Pool({
     user: dbConfigs.USER,
     password: dbConfigs.PASSWORD,
     database: dbConfigs.DB,
-})
-pool.connect()
+});
+pool.connect();
 
 exports.add = (device) => new Promise((resolve, reject) => {
     pool.query(
@@ -26,10 +26,10 @@ exports.add = (device) => new Promise((resolve, reject) => {
         ],
         (error, result) => {
             if (error) {
-                reject(error)
-                return
+                reject(error);
+                return;
             }
-            resolve(result.rows[0].id)
+            resolve(result.rows[0].id);
         }
     )
 });
@@ -39,20 +39,20 @@ exports.getAll = () => new Promise((resolve, reject) => {
         'SELECT id, name, type, ip, mac, active, management_attributes, monitoring_attributes FROM devices ORDER BY id ASC',
         (error, result) => {
             if (error) {
-                reject(error)
-                return
+                reject(error);
+                return;
             }
             if (result) {
                 resolve(result.rows.map((row) => {
-                    row.managementAttributes = row.management_attributes
-                    row.monitoringAttributes = row.monitoring_attributes
-                    delete row.management_attributes
-                    delete row.monitoring_attributes
-                    return row
-                }))
-                return
+                    row.managementAttributes = row.management_attributes;
+                    row.monitoringAttributes = row.monitoring_attributes;
+                    delete row.management_attributes;
+                    delete row.monitoring_attributes;
+                    return row;
+                }));
+                return;
             }
-            resolve([])
+            resolve([]);
         }
     )
 });
@@ -63,19 +63,19 @@ exports.getById = (deviceId) => new Promise((resolve, reject) => {
         [deviceId],
         (error, result) => {
             if (error) {
-                reject(error)
-                return
+                reject(error);
+                return;
             }
             if (result && result.rows.length > 0) {
-                const device = result.rows[0]
-                device.managementAttributes = device.management_attributes
-                device.monitoringAttributes = device.monitoring_attributes
-                delete device.management_attributes
-                delete device.monitoring_attributes
-                resolve(device)
-                return
+                const device = result.rows[0];
+                device.managementAttributes = device.management_attributes;
+                device.monitoringAttributes = device.monitoring_attributes;
+                delete device.management_attributes;
+                delete device.monitoring_attributes;
+                resolve(device);
+                return;
             }
-            resolve(null)
+            resolve(null);
         }
     )
 });
@@ -94,10 +94,10 @@ exports.update = (deviceId, device) => new Promise((resolve, reject) => {
         ],
         (error, result) => {
             if (error) {
-                reject(error)
-                return
+                reject(error);
+                return;
             }
-            resolve(result.rowCount)
+            resolve(result.rowCount);
         }
     )
 });
@@ -108,11 +108,11 @@ exports.delete = (deviceId) => new Promise((resolve, reject) => {
         [deviceId],
         (error, result) => {
             if (error) {
-                reject(error)
-                return
+                reject(error);
+                return;
             }
-            resolve(result.rowCount)
-            return
+            resolve(result.rowCount);
+            return;
         }
     )
 });
