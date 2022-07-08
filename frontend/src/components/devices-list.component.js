@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import {
     CheckCircle,
-    Cance,
+    Cancel,
     Preview,
     Edit,
     Delete

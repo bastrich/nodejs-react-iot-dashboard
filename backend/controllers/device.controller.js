@@ -11,8 +11,8 @@ const {
 } = require('../routes/validators');
 const dao = require("../db/dao.js");
 
-Array.prototype.random = () => {
-    return this[Math.floor(Math.random() * this.length)];
+random = (array) => {
+    return array[Math.floor(Math.random() * array.length)];
 };
 
 deduplicate = (array) => {
@@ -47,34 +47,34 @@ exports.create = (req, res) => {
     switch (device.type) {
         case "BULB":
             device.monitoring_attributes = {
-                status: BULB_STATES.random(),
-                color: BULB_COLORS.random(),
+                status: random(BULB_STATES),
+                color: random(BULB_COLORS),
                 brightness: Math.floor(Math.random() * 100) + 1,
                 temperature: Math.floor(Math.random() * 100) + 1
             };
             break;
         case "RADIATOR":
             device.monitoring_attributes = {
-                status: RADIATOR_STATES.random(),
+                status: random(RADIATOR_STATES),
                 temperature: Math.floor(Math.random() * 100) + 1
             };
             break;
         case "TV":
             device.monitoring_attributes = {
-                status: TV_STATES.random(),
+                status: random(TV_STATES),
                 brightness: Math.floor(Math.random() * 100) + 1,
                 volume: Math.floor(Math.random() * 100) + 1
             };
             break;
         case "FRIDGE":
             device.monitoring_attributes = {
-                status: FRIDGE_STATES.random(),
+                status: random(FRIDGE_STATES),
                 temperature: Math.floor(Math.random() * 100) + 1
             };
             break;
         case "KETTLE":
             device.monitoring_attributes = {
-                status: KETTLE_STATES.random(),
+                status: random(KETTLE_STATES),
                 heaterTemperature: Math.floor(Math.random() * 100) + 1,
                 waterTemperature: Math.floor(Math.random() * 100) + 1
             };
@@ -143,7 +143,46 @@ exports.update = (req, res) => {
         res.status(400).send(validation);
         return;
     }
-    ;
+
+    const device = req.body;
+
+    //Emulate integration with a real device generating random values for monitoring attributes
+    switch (device.type) {
+        case "BULB":
+            device.monitoring_attributes = {
+                status: random(BULB_STATES),
+                color: random(BULB_COLORS),
+                brightness: Math.floor(Math.random() * 100) + 1,
+                temperature: Math.floor(Math.random() * 100) + 1
+            };
+            break;
+        case "RADIATOR":
+            device.monitoring_attributes = {
+                status: random(RADIATOR_STATES),
+                temperature: Math.floor(Math.random() * 100) + 1
+            };
+            break;
+        case "TV":
+            device.monitoring_attributes = {
+                status: random(TV_STATES),
+                brightness: Math.floor(Math.random() * 100) + 1,
+                volume: Math.floor(Math.random() * 100) + 1
+            };
+            break;
+        case "FRIDGE":
+            device.monitoring_attributes = {
+                status: random(FRIDGE_STATES),
+                temperature: Math.floor(Math.random() * 100) + 1
+            };
+            break;
+        case "KETTLE":
+            device.monitoring_attributes = {
+                status: random(KETTLE_STATES),
+                heaterTemperature: Math.floor(Math.random() * 100) + 1,
+                waterTemperature: Math.floor(Math.random() * 100) + 1
+            };
+            break;
+    }
 
     dao.update(req.params.id, req.body)
         .then(affectedRows => {

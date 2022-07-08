@@ -87,7 +87,6 @@ const intRangeValidator = (types, field) => {
     return body(`managementAttributes.${field}`, `should be an integer in range from 1 till 100`)
         .if(body("type").isIn(types))
         .exists({checkFalsy: true, checkNull: true})
-        .trim()
         .isInt({min: 1, max: 100});
 }
 const deviceBrightnessValidator = intRangeValidator(["BULB", "TV"], "brightness");
